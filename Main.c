@@ -1,10 +1,16 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <SDL.h>
 
 bool is_running;
 SDL_Window* window;
 SDL_Renderer* renderer;
+
+int window_width = 800;
+int window_height = 600;
+
+uint32_t* frame_buffer;
 
 bool initialize_window(void) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -14,8 +20,9 @@ bool initialize_window(void) {
 	
 	int x, y;
 	x = y = SDL_WINDOWPOS_CENTERED;
+	
 	// create SDL window
-	window = SDL_CreateWindow(NULL, x, y, 800, 600, SDL_WINDOW_BORDERLESS);
+	window = SDL_CreateWindow(NULL, x, y, window_width, window_height, SDL_WINDOW_BORDERLESS);
 
 	if (!window) {
 		fprintf(stderr, "Error creating SDL window.\n");
@@ -32,7 +39,7 @@ bool initialize_window(void) {
 }
 
 void setup(void) {
-	// TODO
+	frame_buffer = (uint32_t)malloc(sizeof(uint32_t) * window_width * window_height);
 }
 
 void process_input(void) {
@@ -63,6 +70,13 @@ void render(void) {
 	SDL_RenderPresent(renderer);
 }
 
+void cleanup(void) {
+	free(frame_buffer);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+}
+
 int main(int argc, char* args[]) {
 	is_running = initialize_window();
 
@@ -73,6 +87,8 @@ int main(int argc, char* args[]) {
 		update();
 		render();
 	}
+
+	cleanup();
 
 	return 0;
 }
