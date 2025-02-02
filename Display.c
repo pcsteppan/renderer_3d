@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <SDL.h>
+#include "Display.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -61,9 +62,18 @@ void draw_grid(int size, uint32_t grid_color, uint32_t background_color) {
 void draw_rect(int x, int y, int width, int height, uint32_t fill_color) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			frame_buffer[(i + y) * window_width +  + j] = fill_color;
+			frame_buffer[(j + y) * window_width + x + i] = fill_color;
 		}
 	}
+}
+
+void draw_pixel(int x, int y, uint32_t color)
+{
+	if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
+		return;
+	}
+
+	frame_buffer[y * window_width + x] = color;
 }
 
 void clear_frame_buffer(uint32_t color) {
@@ -92,6 +102,7 @@ void render(void) {
 	clear_frame_buffer(0xFF000000);
 	draw_grid(window_width / 20, 0xFFBBBBBB, 0xFF0000FF);
 	draw_rect(300, 100, 100, 100, 0xFFFF0000);
+	draw_pixel(600, 820, 0xFF00FF00);
 	render_frame_buffer();
 
 	SDL_RenderPresent(renderer);
