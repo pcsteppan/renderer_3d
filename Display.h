@@ -14,7 +14,6 @@ bool initialize_window(void);
 void cleanup(void);
 void draw_grid(int size, uint32_t grid_color, uint32_t background_color);
 void draw_rect(int x, int y, int width, int height, uint32_t fill_color);
-void draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, uint32_t fill_color);
 void draw_pixel(int x, int y, uint32_t color);
 void clear_frame_buffer(uint32_t color);
 void render_frame_buffer(void);

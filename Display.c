@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include "Display.h"
+#include "Vector.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -67,35 +68,6 @@ void draw_rect(int x, int y, int width, int height, uint32_t fill_color) {
 	}
 }
 
-int min(int a, int b) {
-	if (a < b) {
-		return a;
-	} else {
-		return b;
-	}
-}
-
-int max(int a, int b) {
-	if (a > b) {
-		return a;
-	} else {
-		return b;
-	}
-}
-
-int cross_product(int ax, int ay, int bx, int by) {
-	return ax * by - ay * bx;
-}
-
-void draw_triangle(
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	uint32_t fill_color
-) {
-
-}
-
 void draw_pixel(int x, int y, uint32_t color)
 {
 	if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
@@ -122,19 +94,6 @@ void render_frame_buffer(void) {
 	// NULL for source and destination rectangles
 	// because we want to render the entire texture
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
-}
-
-void render(void) {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-	SDL_RenderClear(renderer);
-
-	clear_frame_buffer(0xFF000000);
-	draw_grid(window_width / 20, 0xFFBBBBBB, 0xFF0000FF);
-	draw_rect(300, 100, 100, 100, 0xFFFF0000);
-	draw_pixel(600, 820, 0xFF00FF00);
-	render_frame_buffer();
-
-	SDL_RenderPresent(renderer);
 }
 
 void cleanup(void) {
