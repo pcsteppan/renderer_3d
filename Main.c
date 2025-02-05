@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include "Display.h"
+#include "Vector.h"
 
 bool is_running;
 
@@ -46,6 +47,8 @@ int main(int argc, char* args[]) {
 	is_running = initialize_window();
 
 	setup();
+
+	vec2_t myvec = { 0, 1 };
 
 	while (is_running) {
 		process_input();

@@ -67,6 +67,35 @@ void draw_rect(int x, int y, int width, int height, uint32_t fill_color) {
 	}
 }
 
+int min(int a, int b) {
+	if (a < b) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+int max(int a, int b) {
+	if (a > b) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+int cross_product(int ax, int ay, int bx, int by) {
+	return ax * by - ay * bx;
+}
+
+void draw_triangle(
+	int x1, int y1,
+	int x2, int y2,
+	int x3, int y3,
+	uint32_t fill_color
+) {
+
+}
+
 void draw_pixel(int x, int y, uint32_t color)
 {
 	if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
