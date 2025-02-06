@@ -11,6 +11,9 @@ bool is_running;
 vec3_t cube_points[N_POINTS];
 vec2_t projected_points[N_POINTS];
 
+float fov_factor = 128 * 4;
+vec3_t camera_pos = { 0, 0, -5 };
+
 void setup(void) {
 	frame_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
 	if (!frame_buffer) {
@@ -77,13 +80,21 @@ void update(void) {
 	for (int i = 0; i < N_POINTS; i++)
 	{
 		vec3_t pt = cube_points[i];
-		vec2_t pt_2d = { pt.x, pt.y };
-		vec2_t projected_point = lerp_vec2_t(
-			pt_2d, 
-			(vec2_t){ -1, -1 }, 
-			(vec2_t){ 1, 1, }, 
-			(vec2_t){ 400, 200 }, 
-			(vec2_t){ 600, 400 });
+
+		pt.z -= camera_pos.z;
+
+		vec2_t pt_2d = { pt.x * fov_factor / pt.z, pt.y * fov_factor / pt.z };
+
+		pt_2d.x += window_width / 2;
+		pt_2d.y += window_height / 2;
+
+		vec2_t projected_point = { pt_2d.x, pt_2d.y };
+		// vec2_t projected_point = lerp_vec2_t(
+		// 	pt_2d, 
+		// 	(vec2_t){ -1, -1 }, 
+		// 	(vec2_t){ 1, 1, }, 
+		// 	(vec2_t){ 400, 200 }, 
+		// 	(vec2_t){ 600, 400 });
 		projected_points[i] = projected_point;
 	}
 }
@@ -91,7 +102,7 @@ void update(void) {
 void draw_projected_points() {
 	for (int i = 0; i < N_POINTS; i++) {
 		vec2_t pt = projected_points[i];
-		draw_rect((int)pt.x, (int)pt.y, 10, 10, 0xFFFF0000);
+		draw_rect((int)pt.x, (int)pt.y, 2, 2, 0xFFFF0000);
 	}
 }
 

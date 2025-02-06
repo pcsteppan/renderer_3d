@@ -63,7 +63,7 @@ void draw_grid(int size, uint32_t grid_color, uint32_t background_color) {
 void draw_rect(int x, int y, int width, int height, uint32_t fill_color) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			frame_buffer[(j + y) * window_width + x + i] = fill_color;
+			draw_pixel(x + i, j + y, fill_color);
 		}
 	}
 }
