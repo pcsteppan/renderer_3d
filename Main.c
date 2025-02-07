@@ -9,9 +9,9 @@ bool is_running;
 
 #define N_POINTS (9 * 9 * 9)
 vec3_t cube_points[N_POINTS];
-vec3_t cube_rotation = { 0.001,0.003,0.0001 };
+vec3_t cube_rotation = { 0.002,0.002,0.002 };
 vec2_t projected_points[N_POINTS];
-float fov_factor = 128 * 8;
+float fov_factor = 128 * 6;
 vec3_t camera_pos = { 0, 0, -5 };
 
 void setup(void) {
@@ -76,7 +76,17 @@ void process_input(void) {
 	}
 }
 
-vec3_t scale(float scalar, vec3_t vec) {
+float lose_precision_f(float f, int precision) {
+	int s = (int) pow(10, precision);
+	return ((float)(int)(f * s)) / s;
+}
+
+vec3_t lose_precision(vec3_t v, int precision) {
+	return (vec3_t) {
+		lose_precision_f(v.x, precision),
+		lose_precision_f(v.y, precision),
+		lose_precision_f(v.z, precision)
+	};
 }
 
 // rotate, scale, translate
@@ -92,6 +102,7 @@ void transform_points() {
 				), 
 				cube_rotation.z
 			);
+		cube_points[i] = lose_precision(cube_points[i], 3);
 	}
 }
 
