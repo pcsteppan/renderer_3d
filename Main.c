@@ -9,9 +9,9 @@ bool is_running;
 
 #define N_POINTS (9 * 9 * 9)
 vec3_t cube_points[N_POINTS];
+vec3_t cube_rotation = { 0.001,0.003,0.0001 };
 vec2_t projected_points[N_POINTS];
-
-float fov_factor = 128 * 4;
+float fov_factor = 128 * 8;
 vec3_t camera_pos = { 0, 0, -5 };
 
 void setup(void) {
@@ -76,7 +76,26 @@ void process_input(void) {
 	}
 }
 
-void update(void) {
+vec3_t scale(float scalar, vec3_t vec) {
+}
+
+// rotate, scale, translate
+void transform_points() {
+	for (int i = 0; i < N_POINTS; i++) {
+		cube_points[i] = 
+			vec3_rotate_z
+			(
+				vec3_rotate_y
+				(
+					vec3_rotate_x(cube_points[i], cube_rotation.x),
+					cube_rotation.y
+				), 
+				cube_rotation.z
+			);
+	}
+}
+
+void project_points() {
 	for (int i = 0; i < N_POINTS; i++)
 	{
 		vec3_t pt = cube_points[i];
@@ -89,20 +108,19 @@ void update(void) {
 		pt_2d.y += window_height / 2;
 
 		vec2_t projected_point = { pt_2d.x, pt_2d.y };
-		// vec2_t projected_point = lerp_vec2_t(
-		// 	pt_2d, 
-		// 	(vec2_t){ -1, -1 }, 
-		// 	(vec2_t){ 1, 1, }, 
-		// 	(vec2_t){ 400, 200 }, 
-		// 	(vec2_t){ 600, 400 });
 		projected_points[i] = projected_point;
 	}
+}
+
+void update(void) {
+	transform_points();
+	project_points();
 }
 
 void draw_projected_points() {
 	for (int i = 0; i < N_POINTS; i++) {
 		vec2_t pt = projected_points[i];
-		draw_rect((int)pt.x, (int)pt.y, 2, 2, 0xFFFF0000);
+		draw_rect((int)pt.x, (int)pt.y, 4, 4, 0xFFEFFFFF);
 	}
 }
 
@@ -111,9 +129,7 @@ void render(void) {
 	SDL_RenderClear(renderer);
 
 	clear_frame_buffer(0xFF000000);
-	draw_grid(window_width / 20, 0xFFBBBBBB, 0xFF0000FF);
-	draw_rect(300, 100, 100, 100, 0xFFFF0000);
-	draw_pixel(600, 820, 0xFF00FF00);
+	draw_grid(window_width / 20, 0xFF222222, 0xFF000000);
 	draw_projected_points();
 	render_frame_buffer();
 
