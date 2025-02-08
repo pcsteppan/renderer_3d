@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
 
-#define FPS 60 
+#define FPS 30 
 #define FRAME_TARGET_TIME (1000/FPS)
 
 // global declarations

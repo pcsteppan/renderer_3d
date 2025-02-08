@@ -36,9 +36,7 @@ void setup(void) {
 	for (float x = -1; x <= 1; x += delta) {
 		for (float y = -1; y <= 1; y += delta) {
 			for (float z = -1; z <= 1; z += delta) {
-				printf("%d\n", i);
-				cube_points[i] = (vec3_t){ x, y, z };
-				i += 1;
+				cube_points[i++] = (vec3_t){ x, y, z };
 			}
 		}
 	}
@@ -105,7 +103,7 @@ void transform_points() {
 				), 
 				cube_rotation.z
 			);
-		cube_points[i] = lose_precision(cube_points[i], 3);
+		// cube_points[i] = lose_precision(cube_points[i], 3);
 	}
 }
 
