@@ -158,11 +158,11 @@ int main(int argc, char* args[]) {
 	setup();
 
 	while (is_running) {
-		int curr_ticks = SDL_GetTicks();
-		if ((curr_ticks - prev_frame_time) < FRAME_TARGET_TIME) {
-			continue;
+		int elapsed = (SDL_GetTicks() - prev_frame_time);
+		int time_till_next = FRAME_TARGET_TIME - elapsed;
+		if (time_till_next > 0) {
+			SDL_Delay(time_till_next);
 		}
-		prev_frame_time = curr_ticks;
 		
 		process_input();
 		update();
