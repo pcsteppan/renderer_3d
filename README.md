@@ -2,6 +2,9 @@
 
 documenting things I try while building this out
 
+## Feb 8 2025
+![](./gifs/high_density_point_cube.gif)
+
 ## Feb 7 2025
 over the past couple weeks I've gotten the groundwork set up to start rendering and rotating point clouds,
 or in this case a cube.

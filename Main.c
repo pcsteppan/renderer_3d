@@ -7,9 +7,10 @@
 
 bool is_running;
 
-#define N_POINTS (9 * 9 * 9)
+#define N_POINTS_SIZE 40
+#define N_POINTS (N_POINTS_SIZE * N_POINTS_SIZE * N_POINTS_SIZE)
 vec3_t cube_points[N_POINTS];
-vec3_t cube_rotation = { 0.002,0.002,0.002 };
+vec3_t cube_rotation = { 0.003,0.008,0.008 };
 vec2_t projected_points[N_POINTS];
 float fov_factor = 128 * 6;
 vec3_t camera_pos = { 0, 0, -5 };
@@ -32,11 +33,14 @@ void setup(void) {
 	);
 	
 	int i = 0;
-	float delta = 0.25;
-	for (float x = -1; x <= 1; x += delta) {
-		for (float y = -1; y <= 1; y += delta) {
-			for (float z = -1; z <= 1; z += delta) {
-				cube_points[i++] = (vec3_t){ x, y, z };
+	float delta = 1. / N_POINTS_SIZE;
+	for (int x = 0; x < N_POINTS_SIZE; x++) {
+		for (int y = 0; y < N_POINTS_SIZE; y++) {
+			for (int z = 0; z < N_POINTS_SIZE; z++) {
+				float fx = (float)x / N_POINTS_SIZE * 2. - 1;
+				float fy = (float)y / N_POINTS_SIZE * 2. - 1;
+				float fz = (float)z / N_POINTS_SIZE * 2. - 1;
+				cube_points[i++] = (vec3_t){ fx, fy, fz };
 			}
 		}
 	}
