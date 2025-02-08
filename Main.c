@@ -14,6 +14,9 @@ vec2_t projected_points[N_POINTS];
 float fov_factor = 128 * 6;
 vec3_t camera_pos = { 0, 0, -5 };
 
+int prev_frame_time = 0;
+
+
 void setup(void) {
 	frame_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
 	if (!frame_buffer) {
@@ -153,6 +156,12 @@ int main(int argc, char* args[]) {
 	setup();
 
 	while (is_running) {
+		int curr_ticks = SDL_GetTicks();
+		if ((curr_ticks - prev_frame_time) < FRAME_TARGET_TIME) {
+			continue;
+		}
+		prev_frame_time = curr_ticks;
+		
 		process_input();
 		update();
 		render();
