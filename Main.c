@@ -113,11 +113,11 @@ void update(void) {
 	array_empty(triangle_render_buffer);
 	vec3_t rot = { .0005 * t, .0009 * t, .0001 * t };
 
-	for (int i = 0; i < N_MESH_FACES; i++) {
-		face_t face = mesh_faces[i];
-		vec3_t a = vec3_rotate(mesh_vertices[face.a], rot);
-		vec3_t b = vec3_rotate(mesh_vertices[face.b], rot);
-		vec3_t c = vec3_rotate(mesh_vertices[face.c], rot);
+	for (int i = 0; i < N_CUBE_FACES; i++) {
+		face_t face = cube_faces[i];
+		vec3_t a = vec3_rotate(cube_vertices[face.a], rot);
+		vec3_t b = vec3_rotate(cube_vertices[face.b], rot);
+		vec3_t c = vec3_rotate(cube_vertices[face.c], rot);
 
 		vec2_t a2 = project_vec3(a);
 		vec2_t b2 = project_vec3(b);

@@ -11,8 +11,8 @@
       A----D    0----3   
 */
 
-#define N_MESH_VERTICES 8
-extern vec3_t mesh_vertices[N_MESH_VERTICES];
+#define N_CUBE_VERTICES 8
+extern vec3_t cube_vertices[N_CUBE_VERTICES];
 
-#define N_MESH_FACES 12
-extern face_t mesh_faces[N_MESH_FACES];
+#define N_CUBE_FACES 12
+extern face_t cube_faces[N_CUBE_FACES];

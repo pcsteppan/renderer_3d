@@ -10,7 +10,7 @@
       A----D    0----3   
 */
 
-vec3_t mesh_vertices[N_MESH_VERTICES] = {
+vec3_t cube_vertices[N_CUBE_VERTICES] = {
 	{-1, -1, -1}, // A 0
 	{-1,  1, -1}, // B 1
 	{ 1,  1, -1}, // C 2
@@ -21,7 +21,7 @@ vec3_t mesh_vertices[N_MESH_VERTICES] = {
 	{-1, -1,  1}  // H 7
 };
 
-face_t mesh_faces[N_MESH_FACES] = {
+face_t cube_faces[N_CUBE_FACES] = {
 	// front
 	{0, 1, 2},
 	{2, 3, 0},
