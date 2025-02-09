@@ -7,11 +7,6 @@
 
 bool is_running;
 
-#define N_POINTS_SIZE 40
-#define N_POINTS (N_POINTS_SIZE * N_POINTS_SIZE * N_POINTS_SIZE)
-vec3_t cube_points[N_POINTS];
-vec3_t cube_rotation = { 0.003,0.008,0.008 };
-vec2_t projected_points[N_POINTS];
 float fov_factor = 128 * 6;
 vec3_t camera_pos = { 0, 0, -5 };
 
@@ -31,19 +26,6 @@ void setup(void) {
 		window_width,
 		window_height
 	);
-	
-	int i = 0;
-	float delta = 1. / N_POINTS_SIZE;
-	for (int x = 0; x < N_POINTS_SIZE; x++) {
-		for (int y = 0; y < N_POINTS_SIZE; y++) {
-			for (int z = 0; z < N_POINTS_SIZE; z++) {
-				float fx = (float)x / N_POINTS_SIZE * 2. - 1;
-				float fy = (float)y / N_POINTS_SIZE * 2. - 1;
-				float fz = (float)z / N_POINTS_SIZE * 2. - 1;
-				cube_points[i++] = (vec3_t){ fx, fy, fz };
-			}
-		}
-	}
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -65,7 +47,6 @@ vec2_t lerp_vec2_t(vec2_t a, vec2_t origin_start, vec2_t origin_end, vec2_t dest
 }
 
 void process_input(void) {
-	// TODO
 	SDL_Event event;
 	SDL_PollEvent(&event);
 
@@ -96,36 +77,36 @@ vec3_t lose_precision(vec3_t v, int precision) {
 
 // rotate, scale, translate
 void transform_points() {
-	for (int i = 0; i < N_POINTS; i++) {
-		cube_points[i] = 
-			vec3_rotate_z
-			(
-				vec3_rotate_y
-				(
-					vec3_rotate_x(cube_points[i], cube_rotation.x),
-					cube_rotation.y
-				), 
-				cube_rotation.z
-			);
-		// cube_points[i] = lose_precision(cube_points[i], 3);
-	}
+	// for (int i = 0; i < N_POINTS; i++) {
+	// 	cube_points[i] = 
+	// 		vec3_rotate_z
+	// 		(
+	// 			vec3_rotate_y
+	// 			(
+	// 				vec3_rotate_x(cube_points[i], cube_rotation.x),
+	// 				cube_rotation.y
+	// 			), 
+	// 			cube_rotation.z
+	// 		);
+	// 	// cube_points[i] = lose_precision(cube_points[i], 3);
+	// }
 }
 
 void project_points() {
-	for (int i = 0; i < N_POINTS; i++)
-	{
-		vec3_t pt = cube_points[i];
+	// for (int i = 0; i < N_POINTS; i++)
+	// {
+	// 	vec3_t pt = cube_points[i];
 
-		pt.z -= camera_pos.z;
+	// 	pt.z -= camera_pos.z;
 
-		vec2_t pt_2d = { pt.x * fov_factor / pt.z, pt.y * fov_factor / pt.z };
+	// 	vec2_t pt_2d = { pt.x * fov_factor / pt.z, pt.y * fov_factor / pt.z };
 
-		pt_2d.x += window_width / 2;
-		pt_2d.y += window_height / 2;
+	// 	pt_2d.x += window_width / 2;
+	// 	pt_2d.y += window_height / 2;
 
-		vec2_t projected_point = { pt_2d.x, pt_2d.y };
-		projected_points[i] = projected_point;
-	}
+	// 	vec2_t projected_point = { pt_2d.x, pt_2d.y };
+	// 	projected_points[i] = projected_point;
+	// }
 }
 
 void update(void) {
@@ -134,10 +115,10 @@ void update(void) {
 }
 
 void draw_projected_points() {
-	for (int i = 0; i < N_POINTS; i++) {
-		vec2_t pt = projected_points[i];
-		draw_rect((int)pt.x, (int)pt.y, 4, 4, 0xFFEFFFFF);
-	}
+	// for (int i = 0; i < N_POINTS; i++) {
+	// 	vec2_t pt = projected_points[i];
+	// 	draw_rect((int)pt.x, (int)pt.y, 4, 4, 0xFFEFFFFF);
+	// }
 }
 
 void render(void) {
