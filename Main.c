@@ -5,14 +5,17 @@
 #include "Display.h"
 #include "Vector.h"
 #include "Mesh.h"
+#include "Array.h"
 
 bool is_running;
 
-float fov_factor = 128 * 6;
+float fov_factor = 128 * 12;
 vec3_t camera_pos = { 0, 0, -5 };
 
 int prev_frame_time = 0;
 float t = 0;
+
+triangle_t* triangle_render_buffer = NULL;
 
 void setup(void) {
 	frame_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
@@ -29,6 +32,7 @@ void setup(void) {
 	);
 
 	clear_frame_buffer(0xFF000000);
+	array_hold(triangle_render_buffer, 1000, sizeof(triangle_t));
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -78,7 +82,7 @@ vec3_t lose_precision(vec3_t v, int precision) {
 	};
 }
 
-void draw_vec(vec3_t v) {
+vec2_t project_vec3(vec3_t v) {
 	v.z -= camera_pos.z;
 
  	vec2_t pt_2d = { v.x * fov_factor / v.z, v.y * fov_factor / v.z };
@@ -87,18 +91,41 @@ void draw_vec(vec3_t v) {
 	pt_2d.y += window_height / 2;
 
 	vec2_t v2 = { pt_2d.x, pt_2d.y };
+	return v2;
+}
 
+void draw_vec(vec3_t v) {
+	vec2_t v2 = project_vec3(v);
 	draw_rect(v2.x, v2.y, 4, 4, 0xFFFFFFFF);
 }
 
 void draw() {
+	for (int i = 0; i < array_length(triangle_render_buffer); i++) {
+		triangle_t tri = triangle_render_buffer[i];
+
+		draw_line_vec2(tri.a, tri.b, 0xFFFFFFFF);
+		draw_line_vec2(tri.b, tri.c, 0xFFFFFFFF);
+		draw_line_vec2(tri.c, tri.a, 0xFFFFFFFF);
+	}
+}
+
+void update(void) {
+	array_empty(triangle_render_buffer);
+	vec3_t rot = { .0005 * t, .0009 * t, .0001 * t };
+
 	for (int i = 0; i < N_MESH_FACES; i++) {
 		face_t face = mesh_faces[i];
-		vec3_t a = mesh_vertices[face.a];
-		vec3_t b = mesh_vertices[face.b];
-		vec3_t c = mesh_vertices[face.c];
+		vec3_t a = vec3_rotate(mesh_vertices[face.a], rot);
+		vec3_t b = vec3_rotate(mesh_vertices[face.b], rot);
+		vec3_t c = vec3_rotate(mesh_vertices[face.c], rot);
 
-		draw_vec(vec3_rotate(a, (vec3_t) {0.001 * t, 0.002 * t, 0.0001 * t}));
+		vec2_t a2 = project_vec3(a);
+		vec2_t b2 = project_vec3(b);
+		vec2_t c2 = project_vec3(c);
+
+		triangle_t tri = { a2, b2, c2 };
+		
+		array_push(triangle_render_buffer, tri);
 	}
 }
 
@@ -129,10 +156,12 @@ int main(int argc, char* args[]) {
 		t = (float)SDL_GetTicks();
 		
 		process_input();
+		update();
 		render();
 	}
 
 	cleanup();
+	array_free(triangle_render_buffer);
 
 	return 0;
 }

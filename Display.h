@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include "Vector.h"
 
 #define FPS 30 
 #define FRAME_TARGET_TIME (1000/FPS)
@@ -20,4 +21,7 @@ void draw_rect(int x, int y, int width, int height, uint32_t fill_color);
 void draw_pixel(int x, int y, uint32_t color);
 void clear_frame_buffer(uint32_t color);
 void render_frame_buffer(void);
+
+void draw_line(int x1, int y1, int x2, int y2, uint32_t stroke_color);
+void draw_line_vec2(vec2_t a, vec2_t b, uint32_t stroke_color);
 
