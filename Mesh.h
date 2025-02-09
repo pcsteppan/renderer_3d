@@ -16,3 +16,15 @@ extern vec3_t cube_vertices[N_CUBE_VERTICES];
 
 #define N_CUBE_FACES 12
 extern face_t cube_faces[N_CUBE_FACES];
+
+void load_cube_mesh_data(void);
+
+typedef struct {
+    vec3_t* vertices; // dynamic array of vertices
+    face_t* faces;
+    vec3_t rotation; // euler angles
+    vec3_t scale;
+    vec3_t translation;
+} mesh_t;
+
+extern mesh_t mesh;

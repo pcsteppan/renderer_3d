@@ -1,5 +1,11 @@
+#include <stdio.h>
 #include "Vector.h"
 #include "Mesh.h"
+#include "Array.h"
+
+mesh_t mesh = {
+	NULL, NULL, {0,0,0}
+};
 
 /*
         G----E    6----4
@@ -41,3 +47,15 @@ face_t cube_faces[N_CUBE_FACES] = {
 	{7, 0, 3},
 	{3, 5, 7}
 };
+
+void load_cube_mesh_data(void) {
+	for (int i = 0; i < N_CUBE_VERTICES; i++) {
+		vec3_t vertex = cube_vertices[i];
+		array_push(mesh.vertices, vertex);
+	}
+
+	for (int i = 0; i < N_CUBE_FACES; i++) {
+		face_t face = cube_faces[i];
+		array_push(mesh.faces, face);
+	}
+}

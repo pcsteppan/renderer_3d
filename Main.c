@@ -33,6 +33,8 @@ void setup(void) {
 
 	clear_frame_buffer(0xFF000000);
 	array_hold(triangle_render_buffer, 1000, sizeof(triangle_t));
+	load_cube_mesh_data();
+	mesh.rotation = (vec3_t) { 0.0001,0.0002,0.0003 };
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -111,13 +113,12 @@ void draw() {
 
 void update(void) {
 	array_empty(triangle_render_buffer);
-	vec3_t rot = { .0005 * t, .0009 * t, .0001 * t };
-
-	for (int i = 0; i < N_CUBE_FACES; i++) {
-		face_t face = cube_faces[i];
-		vec3_t a = vec3_rotate(cube_vertices[face.a], rot);
-		vec3_t b = vec3_rotate(cube_vertices[face.b], rot);
-		vec3_t c = vec3_rotate(cube_vertices[face.c], rot);
+	mesh.rotation = (vec3_t) { 0.0001 * t,0.0002 * t,0.0003 * t };
+	for (int i = 0; i < array_length(mesh.faces); i++) {
+		face_t face = mesh.faces[i];
+		vec3_t a = vec3_rotate(mesh.vertices[face.a], mesh.rotation);
+		vec3_t b = vec3_rotate(mesh.vertices[face.b], mesh.rotation);
+		vec3_t c = vec3_rotate(mesh.vertices[face.c], mesh.rotation);
 
 		vec2_t a2 = project_vec3(a);
 		vec2_t b2 = project_vec3(b);
@@ -141,6 +142,12 @@ void render(void) {
 	SDL_RenderPresent(renderer);
 }
 
+void free_resources(void) {
+	array_free(triangle_render_buffer);
+	array_free(mesh.faces);
+	array_free(mesh.vertices);
+}
+
 int main(int argc, char* args[]) {
 	is_running = initialize_window();
 
@@ -161,7 +168,7 @@ int main(int argc, char* args[]) {
 	}
 
 	cleanup();
-	array_free(triangle_render_buffer);
+	free_resources();
 
 	return 0;
 }
