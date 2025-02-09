@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Display.h"
 #include "Vector.h"
+#include "Mesh.h"
 
 bool is_running;
 
@@ -11,7 +12,7 @@ float fov_factor = 128 * 6;
 vec3_t camera_pos = { 0, 0, -5 };
 
 int prev_frame_time = 0;
-
+float t = 0;
 
 void setup(void) {
 	frame_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
@@ -26,6 +27,8 @@ void setup(void) {
 		window_width,
 		window_height
 	);
+
+	clear_frame_buffer(0xFF000000);
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -75,59 +78,37 @@ vec3_t lose_precision(vec3_t v, int precision) {
 	};
 }
 
-// rotate, scale, translate
-void transform_points() {
-	// for (int i = 0; i < N_POINTS; i++) {
-	// 	cube_points[i] = 
-	// 		vec3_rotate_z
-	// 		(
-	// 			vec3_rotate_y
-	// 			(
-	// 				vec3_rotate_x(cube_points[i], cube_rotation.x),
-	// 				cube_rotation.y
-	// 			), 
-	// 			cube_rotation.z
-	// 		);
-	// 	// cube_points[i] = lose_precision(cube_points[i], 3);
-	// }
+void draw_vec(vec3_t v) {
+	v.z -= camera_pos.z;
+
+ 	vec2_t pt_2d = { v.x * fov_factor / v.z, v.y * fov_factor / v.z };
+
+ 	pt_2d.x += window_width / 2;
+	pt_2d.y += window_height / 2;
+
+	vec2_t v2 = { pt_2d.x, pt_2d.y };
+
+	draw_rect(v2.x, v2.y, 4, 4, 0xFFFFFFFF);
 }
 
-void project_points() {
-	// for (int i = 0; i < N_POINTS; i++)
-	// {
-	// 	vec3_t pt = cube_points[i];
+void draw() {
+	for (int i = 0; i < N_MESH_FACES; i++) {
+		face_t face = mesh_faces[i];
+		vec3_t a = mesh_vertices[face.a];
+		vec3_t b = mesh_vertices[face.b];
+		vec3_t c = mesh_vertices[face.c];
 
-	// 	pt.z -= camera_pos.z;
-
-	// 	vec2_t pt_2d = { pt.x * fov_factor / pt.z, pt.y * fov_factor / pt.z };
-
-	// 	pt_2d.x += window_width / 2;
-	// 	pt_2d.y += window_height / 2;
-
-	// 	vec2_t projected_point = { pt_2d.x, pt_2d.y };
-	// 	projected_points[i] = projected_point;
-	// }
-}
-
-void update(void) {
-	transform_points();
-	project_points();
-}
-
-void draw_projected_points() {
-	// for (int i = 0; i < N_POINTS; i++) {
-	// 	vec2_t pt = projected_points[i];
-	// 	draw_rect((int)pt.x, (int)pt.y, 4, 4, 0xFFEFFFFF);
-	// }
+		draw_vec(vec3_rotate(a, (vec3_t) {0.001 * t, 0.002 * t, 0.0001 * t}));
+	}
 }
 
 void render(void) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 	SDL_RenderClear(renderer);
 
-	clear_frame_buffer(0xFF000000);
+	// clear_frame_buffer(0xFF000000);
 	draw_grid(window_width / 20, 0xFF222222, 0xFF000000);
-	draw_projected_points();
+	draw();
 	render_frame_buffer();
 
 	SDL_RenderPresent(renderer);
@@ -144,9 +125,10 @@ int main(int argc, char* args[]) {
 		if (time_till_next > 0) {
 			SDL_Delay(time_till_next);
 		}
+
+		t = (float)SDL_GetTicks();
 		
 		process_input();
-		update();
 		render();
 	}
 
