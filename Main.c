@@ -9,7 +9,7 @@
 
 bool is_running;
 
-float fov_factor = 128 * 4;
+float fov_factor = 128 * 8;
 vec3_t camera_pos = { 0, 0, -5 };
 
 int prev_frame_time = 0;
@@ -114,9 +114,10 @@ void draw() {
 
 void update(void) {
 	array_empty(triangle_render_buffer);
-	mesh.rotation = (vec3_t) { 0.0001 * t,0.0002 * t,0.0003 * t };
+	mesh.rotation = (vec3_t) { 0.5 , -0.0004 * t, 3.24 };
 	for (int i = 0; i < array_length(mesh.faces); i++) {
 		face_t face = mesh.faces[i];
+		
 		vec3_t a = vec3_rotate(mesh.vertices[face.a], mesh.rotation);
 		vec3_t b = vec3_rotate(mesh.vertices[face.b], mesh.rotation);
 		vec3_t c = vec3_rotate(mesh.vertices[face.c], mesh.rotation);
