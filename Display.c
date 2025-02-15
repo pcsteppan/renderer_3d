@@ -83,6 +83,9 @@ void draw_line(int x1, int y1, int x2, int y2, uint32_t stroke_color) {
 	float y = y1;
 
 	for (int i = 0; i < longest_side; i++) {
+		if (x > window_width || y > window_height || x < 0 || y < 0) {
+			break;
+		}
 		draw_pixel(round(x), round(y), stroke_color);
 		x += x_inc;
 		y += y_inc;

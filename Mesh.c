@@ -59,3 +59,41 @@ void load_cube_mesh_data(void) {
 		array_push(mesh.faces, face);
 	}
 }
+
+void load_obj_file_data(char* filename) {
+	FILE* file;
+	fopen_s(&file, filename, "r");
+	if (file == NULL) {
+		printf("Failed to open file: %s\n", filename);
+		return;
+	}
+	
+	char line[1024];
+	while (fgets(line, sizeof(line), file)) {
+		printf("line: %s", line);
+		// vertex information
+		if (line[0] == 'v' && line[1] == ' ') {
+			vec3_t vertex = { 0, 0, 0 };
+			sscanf_s(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+			array_push(mesh.vertices, vertex);
+		}
+
+		// face information
+		if (line[0] == 'f') {
+			face_t face_v = { 0,0,0 };
+			face_t face_vn = { 0,0,0 };
+			face_t face_vt= { 0,0,0 };
+
+			sscanf_s(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+				&face_v.a, &face_vn.a, &face_vt.a,
+				&face_v.b, &face_vn.b, &face_vt.c,
+				&face_v.c, &face_vn.c, &face_vt.c);
+
+			face_v.a-=1; face_v.b-=1; face_v.c-=1;
+
+			array_push(mesh.faces, face_v);
+		}
+	}
+
+	fclose(file);
+}

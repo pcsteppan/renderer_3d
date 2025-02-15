@@ -9,7 +9,7 @@
 
 bool is_running;
 
-float fov_factor = 128 * 12;
+float fov_factor = 128 * 4;
 vec3_t camera_pos = { 0, 0, -5 };
 
 int prev_frame_time = 0;
@@ -33,8 +33,9 @@ void setup(void) {
 
 	clear_frame_buffer(0xFF000000);
 	array_hold(triangle_render_buffer, 1000, sizeof(triangle_t));
-	load_cube_mesh_data();
+	// load_cube_mesh_data();
 	mesh.rotation = (vec3_t) { 0.0001,0.0002,0.0003 };
+	load_obj_file_data("./assets/f22.obj");
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
