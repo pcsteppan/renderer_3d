@@ -6,6 +6,7 @@
 #include "Vector.h"
 #include "Mesh.h"
 #include "Array.h"
+#include "Textile.h"
 
 bool is_running;
 
@@ -16,6 +17,7 @@ int prev_frame_time = 0;
 float t = 0;
 
 triangle_t* triangle_render_buffer = NULL;
+vec2_t* vector_render_buffer = NULL;
 
 void setup(void) {
 	frame_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
@@ -33,9 +35,10 @@ void setup(void) {
 
 	clear_frame_buffer(0xFF000000);
 	array_hold(triangle_render_buffer, 1000, sizeof(triangle_t));
+	array_hold(vector_render_buffer, 1000, sizeof(vec3_t));
 	// load_cube_mesh_data();
 	mesh.rotation = (vec3_t) { 0.0001,0.0002,0.0003 };
-	load_obj_file_data("./assets/f22.obj");
+	// load_obj_file_data("./assets/f22.obj");
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -110,10 +113,17 @@ void draw() {
 		draw_line_vec2(tri.b, tri.c, 0xFFFFFFFF);
 		draw_line_vec2(tri.c, tri.a, 0xFFFFFFFF);
 	}
+
+	for (int i = 0; i < array_length(vector_render_buffer); i++) {
+		vec2_t vec = vector_render_buffer[i];
+
+		draw_add_rect(vec.x, vec.y, 4, 4, 0x00111111);
+	}
 }
 
 void update(void) {
 	array_empty(triangle_render_buffer);
+	array_empty(vector_render_buffer);
 	mesh.rotation = (vec3_t) { 0.5 , -0.0004 * t, 3.24 };
 	for (int i = 0; i < array_length(mesh.faces); i++) {
 		face_t face = mesh.faces[i];
@@ -129,6 +139,46 @@ void update(void) {
 		triangle_t tri = { a2, b2, c2 };
 		
 		array_push(triangle_render_buffer, tri);
+	}
+
+	int res = 50;
+	float treadle_denominator = (float)res / N_INSTR_COUNT;
+	float thread_denominator = (float)res / N_THREAD_COUNT;
+
+	float signal = fmod(t / 16000., 1.);
+	int i_signal = round(signal);
+	float signal2 = fmod((signal * 2), 1);
+	float stagger_signal = fmaxf((float)i_signal, signal2);
+	float rot_x = stagger_signal * 3.1415 * 2.;
+
+	float signal_y = fmod((t + 8000.) / 16000., 1.);
+	int iy_signal = round(signal_y);
+	float signal2y = fmod(signal_y * 2, 1.);
+	float staggery_signal = fmaxf((float)iy_signal, signal2y);
+	float rot_y = staggery_signal * 3.1415 * 2.;
+
+	for (int x = 0; x < res; x++) {
+		for (int y = 0; y < res; y++) {
+			for (int z = 0; z < res; z++) {
+				float fx = (float)x / res - .5;
+				float fy = (float)y / res - .5;
+				float fz = (float)z / res - .5;
+
+				int treadle_idx = treadling[(int) (y / treadle_denominator)];
+				int thread_idx = threading[(int) (x / thread_denominator)];
+				int zthread_idx = threading[(int)(z / thread_denominator)];
+				bool is_warp = tieup[thread_idx][treadle_idx] && tieup[zthread_idx][thread_idx];
+
+				if (is_warp) {
+					vec3_t v = { fx, fy, fz};
+					v = vec3_rotate_x(v, rot_x);
+					v = vec3_rotate_y(v, rot_y);
+					vec2_t v2 = project_vec3(v);
+
+					array_push(vector_render_buffer, v2);
+				}
+			}
+		}
 	}
 }
 

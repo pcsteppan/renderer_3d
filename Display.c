@@ -100,6 +100,31 @@ void draw_rect(int x, int y, int width, int height, uint32_t fill_color) {
 	}
 }
 
+void draw_add_rect(int x, int y, int width, int height, uint32_t fill_color) {
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			draw_add_pixel(x + i, j + y, fill_color);
+		}
+	}
+}
+
+void draw_add_pixel(int x, int y, uint32_t color)
+{
+	if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
+		return;
+	}
+
+	uint32_t current_color = frame_buffer[y * window_width + x];
+	uint32_t new_color = current_color + color;
+
+	// Cap the color at white (0xFFFFFFFF)
+	if (new_color < current_color) {
+		new_color = 0xFFFFFFFF;
+	}
+
+	frame_buffer[y * window_width + x] = new_color;
+}
+
 void draw_pixel(int x, int y, uint32_t color)
 {
 	if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
