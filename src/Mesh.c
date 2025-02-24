@@ -62,7 +62,7 @@ void load_cube_mesh_data(void) {
 
 void load_obj_file_data(char* filename) {
 	FILE* file;
-	fopen_s(&file, filename, "r");
+	file = fopen(filename, "r");
 	if (file == NULL) {
 		printf("Failed to open file: %s\n", filename);
 		return;
@@ -74,7 +74,7 @@ void load_obj_file_data(char* filename) {
 		// vertex information
 		if (line[0] == 'v' && line[1] == ' ') {
 			vec3_t vertex = { 0, 0, 0 };
-			sscanf_s(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+			sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
 			array_push(mesh.vertices, vertex);
 		}
 
@@ -84,7 +84,7 @@ void load_obj_file_data(char* filename) {
 			face_t face_vn = { 0,0,0 };
 			face_t face_vt= { 0,0,0 };
 
-			sscanf_s(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+			sscanf(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
 				&face_v.a, &face_vn.a, &face_vt.a,
 				&face_v.b, &face_vn.b, &face_vt.c,
 				&face_v.c, &face_vn.c, &face_vt.c);

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "Display.h"
 #include "Vector.h"
 #include "Array.h"
