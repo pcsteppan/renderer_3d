@@ -9,7 +9,5 @@ typedef struct {
 } face_t;
 
 typedef struct {
-	vec2_t a;
-	vec2_t b;
-	vec2_t c;
+	vec2_t points[3];
 } triangle_t;

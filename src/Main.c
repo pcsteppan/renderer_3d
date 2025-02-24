@@ -10,7 +10,7 @@
 bool is_running;
 
 float fov_factor = 128 * 8;
-vec3_t camera_pos = { 0, 0, -5 };
+vec3_t camera_pos = { 0, 0, 0 };
 
 int prev_frame_time = 0;
 float t = 0;
@@ -33,9 +33,9 @@ void setup(void) {
 
 	clear_frame_buffer(0xFF000000);
 	array_hold(triangle_render_buffer, 1000, sizeof(triangle_t));
-	// load_cube_mesh_data();
+	load_cube_mesh_data();
 	mesh.rotation = (vec3_t) { 0.0001,0.0002,0.0003 };
-	load_obj_file_data("./assets/f22.obj");
+	// load_obj_file_data("./assets/f22.obj");
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -106,29 +106,61 @@ void draw() {
 	for (int i = 0; i < array_length(triangle_render_buffer); i++) {
 		triangle_t tri = triangle_render_buffer[i];
 
-		draw_line_vec2(tri.a, tri.b, 0xFFFFFFFF);
-		draw_line_vec2(tri.b, tri.c, 0xFFFFFFFF);
-		draw_line_vec2(tri.c, tri.a, 0xFFFFFFFF);
+		draw_line_vec2(tri.points[0], tri.points[1], 0xFFFFFFFF);
+		draw_line_vec2(tri.points[1], tri.points[2], 0xFFFFFFFF);
+		draw_line_vec2(tri.points[2], tri.points[0], 0xFFFFFFFF);
 	}
 }
 
 void update(void) {
 	array_empty(triangle_render_buffer);
 	mesh.rotation = (vec3_t) { 0.5 , -0.0004 * t, 3.24 };
+	
 	for (int i = 0; i < array_length(mesh.faces); i++) {
 		face_t face = mesh.faces[i];
 		
-		vec3_t a = vec3_rotate(mesh.vertices[face.a], mesh.rotation);
-		vec3_t b = vec3_rotate(mesh.vertices[face.b], mesh.rotation);
-		vec3_t c = vec3_rotate(mesh.vertices[face.c], mesh.rotation);
+		vec3_t face_vertices[3];
+		face_vertices[0] = mesh.vertices[face.a];
+		face_vertices[1] = mesh.vertices[face.b];
+       		face_vertices[2] = mesh.vertices[face.c];
 
-		vec2_t a2 = project_vec3(a);
-		vec2_t b2 = project_vec3(b);
-		vec2_t c2 = project_vec3(c);
+		vec3_t transformed_vertices[3];
 
-		triangle_t tri = { a2, b2, c2 };
+		for (int j = 0; j < 3; j++) {
+			vec3_t transformed_vertex = vec3_rotate(face_vertices[i], mesh.rotation);
+			transformed_vertex.z -= camera_pos.z;
+			transformed_vertices[j] = transformed_vertex;
+		}
 		
-		array_push(triangle_render_buffer, tri);
+		vec3_t v_a = transformed_vertices[0];	
+		vec3_t v_b = transformed_vertices[1];	
+		vec3_t v_c = transformed_vertices[2];
+
+		vec3_t v_ab = vec3_sub(v_b, v_a);
+		vec3_t v_ac = vec3_sub(v_c, v_a);	
+		
+		// Compute normal -- left-handed coordinate system
+		// defines order of vectors
+		vec3_t normal = vec3_cross(v_ab, v_ac);
+
+		vec3_t v_cama = vec3_sub(camera_pos, v_a);
+
+		// Compute dot product between normal and camera ray 'cama'
+		float dot = vec3_dot(normal, v_cama);
+
+		// If dot > 0 then the face is facing the camera so we keep
+		// Otherwise we cull 
+		if (dot <= 0) {
+			continue;
+		}
+
+		triangle_t projected_triangle;
+		for (int j = 0; j < 3; j++){
+			vec2_t projected_vertex = project_vec3(transformed_vertices[j]);
+			projected_triangle.points[j] = projected_vertex;	
+		}
+		
+		array_push(triangle_render_buffer, projected_triangle);
 	}
 }
 
