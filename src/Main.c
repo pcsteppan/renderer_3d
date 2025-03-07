@@ -9,7 +9,7 @@
 
 bool is_running;
 
-float fov_factor = 128 * 8;
+float fov_factor = 128 * 4;
 vec3_t camera_pos = { 0, 0, 0 };
 
 int prev_frame_time = 0;
@@ -33,9 +33,9 @@ void setup(void) {
 
 	clear_frame_buffer(0xFF000000);
 	array_hold(triangle_render_buffer, 1000, sizeof(triangle_t));
-	load_cube_mesh_data();
+	// load_cube_mesh_data();
+	load_obj_file_data("./assets/f22.obj");
 	mesh.rotation = (vec3_t) { 0.0001,0.0002,0.0003 };
-	// load_obj_file_data("./assets/f22.obj");
 }
 
 float lerp_f(float a, float origin_start, float origin_end, float dest_start, float dest_end) {
@@ -86,7 +86,7 @@ vec3_t lose_precision(vec3_t v, int precision) {
 }
 
 vec2_t project_vec3(vec3_t v) {
-	v.z -= camera_pos.z;
+	v.z += 5;
 
  	vec2_t pt_2d = { v.x * fov_factor / v.z, v.y * fov_factor / v.z };
 
@@ -115,7 +115,7 @@ void draw() {
 void update(void) {
 	array_empty(triangle_render_buffer);
 	mesh.rotation = (vec3_t) { 0.5 , -0.0004 * t, 3.24 };
-	
+
 	for (int i = 0; i < array_length(mesh.faces); i++) {
 		face_t face = mesh.faces[i];
 		
@@ -127,21 +127,21 @@ void update(void) {
 		vec3_t transformed_vertices[3];
 
 		for (int j = 0; j < 3; j++) {
-			vec3_t transformed_vertex = vec3_rotate(face_vertices[i], mesh.rotation);
-			transformed_vertex.z -= camera_pos.z;
+			vec3_t transformed_vertex = vec3_rotate(face_vertices[j], mesh.rotation);
+			transformed_vertex.z += 1;
 			transformed_vertices[j] = transformed_vertex;
 		}
 		
-		vec3_t v_a = transformed_vertices[0];	
-		vec3_t v_b = transformed_vertices[1];	
+		vec3_t v_a = transformed_vertices[0];
+		vec3_t v_b = transformed_vertices[1];
 		vec3_t v_c = transformed_vertices[2];
 
-		vec3_t v_ab = vec3_sub(v_b, v_a);
-		vec3_t v_ac = vec3_sub(v_c, v_a);	
-		
+		vec3_t v_ab = vec3_norm(vec3_sub(v_b, v_a));
+		vec3_t v_ac = vec3_norm(vec3_sub(v_c, v_a));
+
 		// Compute normal -- left-handed coordinate system
 		// defines order of vectors
-		vec3_t normal = vec3_cross(v_ab, v_ac);
+		vec3_t normal = vec3_norm(vec3_cross(v_ab, v_ac));
 
 		vec3_t v_cama = vec3_sub(camera_pos, v_a);
 
@@ -149,8 +149,8 @@ void update(void) {
 		float dot = vec3_dot(normal, v_cama);
 
 		// If dot > 0 then the face is facing the camera so we keep
-		// Otherwise we cull 
-		if (dot <= 0) {
+		// Otherwise we cull
+		if (dot < 0) {
 			continue;
 		}
 
@@ -159,7 +159,7 @@ void update(void) {
 			vec2_t projected_vertex = project_vec3(transformed_vertices[j]);
 			projected_triangle.points[j] = projected_vertex;	
 		}
-		
+
 		array_push(triangle_render_buffer, projected_triangle);
 	}
 }

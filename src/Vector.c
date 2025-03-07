@@ -82,6 +82,16 @@ vec3_t vec3_cross(vec3_t a, vec3_t b) {
     return result;
 }
 
+vec3_t vec3_norm(vec3_t v) {
+	float length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	vec3_t result = {
+		v.x / length,
+		v.y / length,
+		v.z / length	
+	};
+	return result;
+}
+
 float vec3_dot(vec3_t a, vec3_t b) {
     return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
