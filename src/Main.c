@@ -86,8 +86,6 @@ vec3_t lose_precision(vec3_t v, int precision) {
 }
 
 vec2_t project_vec3(vec3_t v) {
-	v.z += 5;
-
  	vec2_t pt_2d = { v.x * fov_factor / v.z, v.y * fov_factor / v.z };
 
  	pt_2d.x += window_width / 2;
@@ -128,7 +126,7 @@ void update(void) {
 
 		for (int j = 0; j < 3; j++) {
 			vec3_t transformed_vertex = vec3_rotate(face_vertices[j], mesh.rotation);
-			transformed_vertex.z += 1;
+			transformed_vertex.z += 5;
 			transformed_vertices[j] = transformed_vertex;
 		}
 		
